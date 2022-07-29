@@ -97,4 +97,12 @@ public class ValidatorRecordImpl<P, E> implements ValidatorRecord<P, E> {
    public int hashCode() {
       return Objects.hash(new Object[]{this.getErrorTag(), this.getErrorAppTag(), this.getErrorPath(), this.getBadElement(), this.errorMessage});
    }
+
+   @Override
+   public int compareTo(ValidatorRecord o) {
+      if(this.getErrorPath().hashCode() != o.getErrorPath().hashCode()){
+         return this.getErrorPath().hashCode() - o.getErrorPath().hashCode();
+      }
+      return this.hashCode() - o.hashCode();
+   }
 }

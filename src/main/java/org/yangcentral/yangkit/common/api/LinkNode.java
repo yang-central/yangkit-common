@@ -1,38 +1,38 @@
 package org.yangcentral.yangkit.common.api;
 
-public class LinkNode {
-   private ILinkData data;
-   private LinkNode next;
-   private LinkNode pre;
+public class LinkNode<E extends Comparable> {
+   private E data;
+   private LinkNode<E> next;
+   private LinkNode<E> pre;
 
    public LinkNode() {
    }
 
-   public LinkNode(ILinkData data) {
+   public LinkNode(E data) {
       this.data = data;
    }
 
-   public ILinkData getData() {
+   public E getData() {
       return this.data;
    }
 
-   public void setData(ILinkData data) {
+   public void setData(E data) {
       this.data = data;
    }
 
-   public LinkNode getNext() {
+   public LinkNode<E> getNext() {
       return this.next;
    }
 
-   public void setNext(LinkNode next) {
+   public void setNext(LinkNode<E> next) {
       this.next = next;
    }
 
-   public LinkNode getPre() {
+   public LinkNode<E> getPre() {
       return this.pre;
    }
 
-   public void setPre(LinkNode pre) {
+   public void setPre(LinkNode<E> pre) {
       this.pre = pre;
    }
 }

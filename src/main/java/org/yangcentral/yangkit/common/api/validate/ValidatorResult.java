@@ -7,5 +7,7 @@ public interface ValidatorResult {
 
    List<ValidatorRecord<?, ?>> getRecords();
 
-   boolean contains(ValidatorRecord<?, ?> var1);
+   boolean contains(ValidatorRecord<?, ?> record);
+
+   void sort();
 }

@@ -1,5 +1,6 @@
 package org.yangcentral.yangkit.common.impl.validate;
 
+import org.yangcentral.yangkit.common.api.Link;
 import org.yangcentral.yangkit.common.api.exception.Severity;
 import org.yangcentral.yangkit.common.api.validate.ValidatorRecord;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
@@ -12,10 +13,10 @@ public class ValidatorResultImpl implements ValidatorResult {
 
    public boolean isOk() {
       if (null != this.validatorRecords && this.validatorRecords.size() > 0) {
-         Iterator var1 = this.validatorRecords.iterator();
+         Iterator recordIterator = this.validatorRecords.iterator();
 
-         while(var1.hasNext()) {
-            ValidatorRecord record = (ValidatorRecord)var1.next();
+         while(recordIterator.hasNext()) {
+            ValidatorRecord record = (ValidatorRecord)recordIterator.next();
             if (record.getSeverity() == Severity.ERROR) {
                return false;
             }
@@ -33,19 +34,33 @@ public class ValidatorResultImpl implements ValidatorResult {
       if (null == this.validatorRecords) {
          return false;
       } else {
-         Iterator var2 = this.validatorRecords.iterator();
+         Iterator recordIterator = this.validatorRecords.iterator();
 
          ValidatorRecord validatorRecord;
          do {
-            if (!var2.hasNext()) {
+            if (!recordIterator.hasNext()) {
                return false;
             }
 
-            validatorRecord = (ValidatorRecord)var2.next();
+            validatorRecord = (ValidatorRecord)recordIterator.next();
          } while(null == validatorRecord || !record.equals(validatorRecord));
 
          return true;
       }
+   }
+
+   @Override
+   public void sort() {
+      Link<ValidatorRecord<?,?>> link = new Link<ValidatorRecord<?,?>>(Link.SortOrder.ASCEND);
+      for(ValidatorRecord record:validatorRecords){
+         link.insert(record);
+      }
+      int length = link.size();
+      validatorRecords.clear();
+      for(int i = 0; i<length;i++){
+         validatorRecords.add(link.get(i));
+      }
+
    }
 
    public void setValidatorRecords(List<ValidatorRecord<?, ?>> validatorRecords) {
@@ -58,10 +73,10 @@ public class ValidatorResultImpl implements ValidatorResult {
       if (null == this.validatorRecords) {
          return sb.toString();
       } else {
-         Iterator var2 = this.validatorRecords.iterator();
+         Iterator recordIterator = this.validatorRecords.iterator();
 
-         while(var2.hasNext()) {
-            ValidatorRecord<?, ?> record = (ValidatorRecord)var2.next();
+         while(recordIterator.hasNext()) {
+            ValidatorRecord<?, ?> record = (ValidatorRecord)recordIterator.next();
             if (null != record) {
                sb.append("\n");
                sb.append(record);

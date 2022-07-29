@@ -1,7 +1,7 @@
 package org.yangcentral.yangkit.common.api;
 
-public class Link<E> {
-   private LinkNode header;
+public class Link<E extends Comparable> {
+   private LinkNode<E> header;
    private SortOrder sortOrder;
    private int size;
 
@@ -12,8 +12,8 @@ public class Link<E> {
 
    public Link() {
       this.sortOrder = SortOrder.NATURAL;
-      this.header = new LinkNode();
-      this.header.setNext((LinkNode)null);
+      this.header = new LinkNode<E>();
+      this.header.setNext(null);
       this.size = 0;
    }
 
@@ -21,7 +21,7 @@ public class Link<E> {
       return this.size;
    }
 
-   public LinkNode getHeader() {
+   public LinkNode<E> getHeader() {
       return this.header;
    }
 
@@ -37,7 +37,7 @@ public class Link<E> {
       if (null == data) {
          return false;
       } else {
-         LinkNode node = new LinkNode((ILinkData)data);
+         LinkNode<E> node = new LinkNode<E>(data);
          return this.insert(node);
       }
    }
@@ -48,12 +48,12 @@ public class Link<E> {
       } else if (this.sortOrder != SortOrder.NATURAL) {
          return false;
       } else {
-         LinkNode node = new LinkNode((ILinkData)data);
+         LinkNode node = new LinkNode(data);
          return this.insert(node, index);
       }
    }
 
-   private boolean insert(LinkNode node, int index) {
+   private boolean insert(LinkNode<E> node, int index) {
       if (null == node) {
          return false;
       } else if (null == node.getData()) {
@@ -67,11 +67,11 @@ public class Link<E> {
       } else if (index >= this.size) {
          return false;
       } else {
-         LinkNode firstNode = this.header.getNext();
+         LinkNode<E> firstNode = this.header.getNext();
          if (null == firstNode) {
             return false;
          } else {
-            LinkNode curNode = firstNode;
+            LinkNode<E> curNode = firstNode;
 
             for(int i = 0; i < index; ++i) {
                curNode = curNode.getNext();
@@ -80,7 +80,7 @@ public class Link<E> {
                }
             }
 
-            LinkNode preNode = curNode.getPre();
+            LinkNode<E> preNode = curNode.getPre();
             if (null != preNode) {
                preNode.setNext(node);
                node.setPre(preNode);
@@ -89,7 +89,7 @@ public class Link<E> {
                ++this.size;
             } else {
                this.header.setNext(node);
-               node.setPre((LinkNode)null);
+               node.setPre(null);
                node.setNext(firstNode);
                firstNode.setPre(node);
                ++this.size;
@@ -100,7 +100,7 @@ public class Link<E> {
       }
    }
 
-   private boolean insert(LinkNode node) {
+   private boolean insert(LinkNode<E> node) {
       if (null == node) {
          return false;
       } else if (null == node.getData()) {
@@ -114,13 +114,13 @@ public class Link<E> {
          ++this.size;
          return true;
       } else {
-         for(LinkNode curNode = this.header.getNext(); null != curNode; curNode = curNode.getNext()) {
-            LinkNode preNode = curNode.getPre();
-            LinkNode nextNode = curNode.getNext();
-            ILinkData curData = curNode.getData();
-            ILinkData insertData = node.getData();
+         for(LinkNode<E> curNode = this.header.getNext(); null != curNode; curNode = curNode.getNext()) {
+            LinkNode<E> preNode = curNode.getPre();
+            LinkNode<E> nextNode = curNode.getNext();
+            E curData = curNode.getData();
+            E insertData = node.getData();
             if (this.sortOrder != SortOrder.NATURAL) {
-               if (curData.compare(insertData) < 0) {
+               if (curData.compareTo(insertData) < 0) {
                   if (this.sortOrder == SortOrder.DESCEND) {
                      if (null == preNode) {
                         this.header.setNext(node);
@@ -164,7 +164,7 @@ public class Link<E> {
       }
    }
 
-   private LinkNode getNode(int index) {
+   private LinkNode<E> getNode(int index) {
       if (null == this.header) {
          return null;
       } else if (index >= this.size) {
@@ -174,7 +174,7 @@ public class Link<E> {
          if (null == firstNode) {
             return null;
          } else {
-            LinkNode curNode = firstNode;
+            LinkNode<E> curNode = firstNode;
 
             for(int i = 0; i < index; ++i) {
                curNode = curNode.getNext();
@@ -189,17 +189,17 @@ public class Link<E> {
    }
 
    public E get(int index) {
-      LinkNode node = this.getNode(index);
-      return null == node ? null : (E)(node.getData());
+      LinkNode<E> node = this.getNode(index);
+      return null == node ? null : (node.getData());
    }
 
    public E getNext(int index) {
-      LinkNode curNode = this.getNode(index);
+      LinkNode<E> curNode = this.getNode(index);
       if (null == curNode) {
          return null;
       } else {
          curNode = curNode.getNext();
-         return null == curNode ? null : (E)(curNode.getData());
+         return null == curNode ? null : (curNode.getData());
       }
    }
 
@@ -211,7 +211,7 @@ public class Link<E> {
       } else if (null == this.header.getNext()) {
          return false;
       } else {
-         for(LinkNode curNode = this.header.getNext(); null != curNode; curNode = curNode.getNext()) {
+         for(LinkNode<E> curNode = this.header.getNext(); null != curNode; curNode = curNode.getNext()) {
             if (curNode.getData().equals(data)) {
                return true;
             }
@@ -229,7 +229,7 @@ public class Link<E> {
       } else if (null == this.header.getNext()) {
          return -1;
       } else {
-         LinkNode curNode = this.header.getNext();
+         LinkNode<E> curNode = this.header.getNext();
 
          for(int index = 0; null != curNode; ++index) {
             if (curNode.getData().equals(data)) {
@@ -243,7 +243,7 @@ public class Link<E> {
       }
    }
 
-   public LinkNode remove(E data) {
+   public LinkNode<E> remove(E data) {
       if (null == data) {
          return null;
       } else if (null == this.header) {
@@ -251,10 +251,10 @@ public class Link<E> {
       } else if (null == this.header.getNext()) {
          return null;
       } else {
-         for(LinkNode curNode = this.header.getNext(); null != curNode; curNode = curNode.getNext()) {
+         for(LinkNode<E> curNode = this.header.getNext(); null != curNode; curNode = curNode.getNext()) {
             if (curNode.getData().equals(data)) {
-               LinkNode preNode = curNode.getPre();
-               LinkNode nextNode = curNode.getNext();
+               LinkNode<E> preNode = curNode.getPre();
+               LinkNode<E> nextNode = curNode.getNext();
                if (null == preNode) {
                   this.header.setNext(nextNode);
                } else {
@@ -280,11 +280,11 @@ public class Link<E> {
       } else if (index >= this.size) {
          return null;
       } else {
-         LinkNode firstNode = this.header.getNext();
+         LinkNode<E> firstNode = this.header.getNext();
          if (null == firstNode) {
             return null;
          } else {
-            LinkNode curNode = firstNode;
+            LinkNode<E> curNode = firstNode;
 
             for(int i = 0; i < index; ++i) {
                curNode = curNode.getNext();
@@ -293,8 +293,8 @@ public class Link<E> {
                }
             }
 
-            LinkNode preNode = curNode.getPre();
-            LinkNode nextNode = curNode.getNext();
+            LinkNode<E> preNode = curNode.getPre();
+            LinkNode<E> nextNode = curNode.getNext();
             if (null == preNode) {
                this.header.setNext(nextNode);
             } else {
