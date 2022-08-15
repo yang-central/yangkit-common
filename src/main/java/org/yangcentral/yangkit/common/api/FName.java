@@ -14,6 +14,9 @@ public class FName {
                this.prefix = strs[0];
                this.localName = strs[1];
             }
+            else {
+               this.localName = fName;
+            }
          }
       }
    }
