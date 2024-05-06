@@ -52,8 +52,8 @@ public class XPathStep {
 
    public String toString() {
       StringBuilder sb = new StringBuilder();
-      String qulifiedName = this.getStep().getQualifiedName();
-      sb.append(qulifiedName);
+      String qualifiedName = this.getStep().getQualifiedName();
+      sb.append(qualifiedName);
       if (null != this.getPredicts()) {
          Iterator var3 = this.getPredicts().iterator();
 

@@ -63,11 +63,8 @@ public class ValidatorResultImpl implements ValidatorResult {
 
    }
 
-   public void setValidatorRecords(List<ValidatorRecord<?, ?>> validatorRecords) {
-      this.validatorRecords = validatorRecords;
-   }
-
-   public String toString() {
+   @Override
+   public String print(Severity severity) {
       StringBuffer sb = new StringBuffer();
       sb.append("result is " + this.isOk());
       if (null == this.validatorRecords) {
@@ -78,12 +75,25 @@ public class ValidatorResultImpl implements ValidatorResult {
          while(recordIterator.hasNext()) {
             ValidatorRecord<?, ?> record = (ValidatorRecord)recordIterator.next();
             if (null != record) {
-               sb.append("\n");
-               sb.append(record);
+               if(record.getSeverity().compare(severity)>=0 ){
+                  sb.append("\n");
+                  sb.append(record);
+               }
+
             }
          }
 
          return sb.toString();
       }
    }
+
+   public void setValidatorRecords(List<ValidatorRecord<?, ?>> validatorRecords) {
+      this.validatorRecords = validatorRecords;
+   }
+
+   public String toString() {
+      return print(Severity.DEBUG);
+   }
+
+
 }

@@ -1,5 +1,7 @@
 package org.yangcentral.yangkit.common.api.validate;
 
+import org.yangcentral.yangkit.common.api.exception.Severity;
+
 import java.util.List;
 
 public interface ValidatorResult {
@@ -10,4 +12,6 @@ public interface ValidatorResult {
    boolean contains(ValidatorRecord<?, ?> record);
 
    void sort();
+
+   String print(Severity severity);
 }
