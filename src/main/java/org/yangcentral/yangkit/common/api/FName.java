@@ -28,4 +28,8 @@ public class FName {
    public String getLocalName() {
       return this.localName;
    }
+
+   public String toString(){
+      return (prefix==null)?localName:(prefix+":"+localName);
+   }
 }
