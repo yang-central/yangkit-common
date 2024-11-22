@@ -14,4 +14,6 @@ public interface ValidatorResult {
    void sort();
 
    String print(Severity severity);
+
+   void clear();
 }
