@@ -89,6 +89,9 @@ public class ValidatorResultImpl implements ValidatorResult {
 
    @Override
    public void clear() {
+      if(this.validatorRecords == null){
+         return;
+      }
       if(!this.validatorRecords.isEmpty()){
          this.validatorRecords.clear();
       }
