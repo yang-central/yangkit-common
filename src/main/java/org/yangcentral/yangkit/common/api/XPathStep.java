@@ -10,6 +10,7 @@ import org.jaxen.NamespaceContext;
 public class XPathStep {
    private QName step;
    private List<Predict> predicts;
+   private Integer position;
 
    public XPathStep(QName step) {
       this.step = step;
@@ -35,6 +36,9 @@ public class XPathStep {
    }
 
    public void addPredict(Predict predict) {
+      if (this.position != null) {
+         throw new IllegalStateException("a positional predicate cannot be combined with key predicates");
+      }
       if (null == this.predicts) {
          this.predicts = new ArrayList();
       }
@@ -50,6 +54,20 @@ public class XPathStep {
       return this.predicts;
    }
 
+   public Integer getPosition() {
+      return this.position;
+   }
+
+   public void setPosition(int position) {
+      if (position < 1) {
+         throw new IllegalArgumentException("position must be greater than zero");
+      }
+      if (this.predicts != null && !this.predicts.isEmpty()) {
+         throw new IllegalStateException("a positional predicate cannot be combined with key predicates");
+      }
+      this.position = position;
+   }
+
    public String toString() {
       StringBuilder sb = new StringBuilder();
       String qualifiedName = this.getStep().getQualifiedName();
@@ -63,6 +81,9 @@ public class XPathStep {
                sb.append("[").append(predict.toString()).append("]");
             }
          }
+      }
+      if (null != this.getPosition()) {
+         sb.append("[").append(this.getPosition()).append("]");
       }
 
       return sb.toString();
@@ -81,6 +102,9 @@ public class XPathStep {
                sb.append("[").append(predict.toString(namespaceContext)).append("]");
             }
          }
+      }
+      if (null != this.getPosition()) {
+         sb.append("[").append(this.getPosition()).append("]");
       }
 
       return sb.toString();
@@ -166,9 +190,22 @@ public class XPathStep {
          Iterator var13 = predictList.iterator();
 
          while(var13.hasNext()) {
-            predictStr = (String)var13.next();
-            Predict predict = Predict.parse(predictStr, namespaceContext, xPathStep.getStep().getNamespace());
-            xPathStep.addPredict(predict);
+            predictStr = ((String)var13.next()).trim();
+            if (predictStr.matches("[1-9][0-9]*")) {
+               if (xPathStep.getPosition() != null || predictList.size() != 1) {
+                  throw new IllegalArgumentException("a positional predicate must be the only predicate");
+               }
+               try {
+                  xPathStep.setPosition(Integer.parseInt(predictStr));
+               } catch (NumberFormatException e) {
+                  throw new IllegalArgumentException("invalid positional predicate:" + predictStr, e);
+               }
+            } else if (predictStr.matches("[0-9]+")) {
+               throw new IllegalArgumentException("position must be greater than zero");
+            } else {
+               Predict predict = Predict.parse(predictStr, namespaceContext, xPathStep.getStep().getNamespace());
+               xPathStep.addPredict(predict);
+            }
          }
       }
 
@@ -183,6 +220,8 @@ public class XPathStep {
       } else {
          XPathStep step1 = (XPathStep)o;
          if (!this.getStep().equals(step1.getStep())) {
+            return false;
+         } else if (!Objects.equals(this.getPosition(), step1.getPosition())) {
             return false;
          } else if (null != this.getPredicts()) {
             if (step1.getPredicts() == null) {
@@ -211,6 +250,6 @@ public class XPathStep {
    }
 
    public int hashCode() {
-      return Objects.hash(new Object[]{this.getStep(), this.getPredicts()});
+      return Objects.hash(new Object[]{this.getStep(), this.getPredicts(), this.getPosition()});
    }
 }
